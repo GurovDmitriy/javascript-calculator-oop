@@ -1,2 +1,1 @@
-import "./fp.js"
-// import "./oop.js"
+import "./oop.js"
