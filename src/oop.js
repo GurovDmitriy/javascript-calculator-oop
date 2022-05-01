@@ -1,9 +1,9 @@
 "use strict"
 
-class OperationNum {
-  constructor(numA, numB) {
-    this.numA = numA
-    this.numB = numB
+class OperationNumbers {
+  constructor() {
+    this.numA = ""
+    this.numB = ""
   }
 
   get numA() {
@@ -11,11 +11,10 @@ class OperationNum {
   }
 
   set numA(value) {
-    if (this._getIsValidNum(value)) {
-      this._numA = value
-    } else {
-      this._numA = null
-    }
+    if (!value) this._numA = ""
+    if (value.length > 4) throw new Error("invalid length number")
+
+    this._numA = value
   }
 
   get numB() {
@@ -23,52 +22,144 @@ class OperationNum {
   }
 
   set numB(value) {
-    if (this._getIsValidNum(value)) {
-      this._numB = value
-    } else {
-      this._numB = null
-    }
+    this._numB = value
+  }
+}
+
+class OperationCache {
+  constructor() {
+    this.numA = null
+    this.numB = null
+    this.result = null
   }
 
-  _getIsValidNum(value) {
-    if (!value) {
-      throw new Error(`invalid num ${value}`)
-    }
+  get numA() {
+    return this._numA
+  }
 
-    if (typeof value !== "number") {
-      throw new Error(`invalid type with ${value}`)
-    }
+  set numA(value) {
+    if (!value && value !== 0) this._numA = null
+    else this._numA = value
+  }
 
-    if (String(value).length > 7) {
-      throw new Error(`invalid length with ${value}`)
-    }
+  get numB() {
+    return this._numB
+  }
 
-    return true
+  set numB(value) {
+    if (!value && value !== 0) this._numB = null
+    else this._numB = value
+  }
+
+  get result() {
+    return this._result
+  }
+
+  set result(value) {
+    if (!value && value !== 0) this._result = null
+    else this._result = value
+  }
+
+  checkCache(numA, numB) {
+    return this.numA === numA && this.numB === numB
+  }
+
+  updateCache(numA, numB, result) {
+    this.numA = numA
+    this.numB = numB
+    this.result = result
   }
 }
 
 class OperationPlus {
-  constructor(numA, numB) {
-    this._operationNum = new OperationNum(numA, numB)
+  constructor() {
+    this.operationCache = new OperationCache()
   }
 
-  get result() {
-    return this._operationNum.numA + this._operationNum.numB
+  result(numA, numB) {
+    if (this.operationCache.checkCache(numA, numB))
+      return this.operationCache.result
+
+    const result = numA + numB
+    this.operationCache.updateCache(numA, numB, result)
+
+    return this.operationCache.result
   }
 }
 
 class OperationMinus {
-  constructor(numA, numB) {
-    this._operationNum = new OperationNum(numA, numB)
+  constructor() {
+    this.operationCache = new OperationCache()
   }
 
-  get result() {
-    return this._operationNum.numA - this._operationNum.numB
+  result(numA, numB) {
+    if (this.operationCache.checkCache(numA, numB))
+      return this.operationCache.result
+
+    const result = numA - numB
+    this.operationCache.updateCache(numA, numB, result)
+
+    return this.operationCache.result
   }
 }
 
-const plus = new OperationPlus(4.24444, 5.3)
-const minus = new OperationMinus(4, 5)
+class Calculator {
+  constructor() {
+    this.action = ""
 
-console.log(plus.result)
-console.log(minus.result)
+    this.operationNumbers = new OperationNumbers()
+
+    this.operationPlus = new OperationPlus()
+    this.operationMinus = new OperationMinus()
+  }
+
+  get action() {
+    return this._action
+  }
+
+  set action(value) {
+    this._action = value
+  }
+
+  setNum(value) {
+    if (!this.action) this.operationNumbers.numA += value
+    else this.operationNumbers.numB += value
+  }
+
+  setAction(value) {
+    this.action = value
+  }
+
+  result() {
+    const numA = Number(this.operationNumbers.numA)
+    const numB = Number(this.operationNumbers.numB)
+
+    return this[this.action].result(numA, numB)
+  }
+}
+
+const calculator = new Calculator()
+
+const num1 = document.getElementById("num-1")
+num1.addEventListener("click", () => {
+  calculator.setNum(1)
+  console.log(calculator)
+})
+
+const plus = document.getElementById("plus")
+plus.addEventListener("click", () => {
+  calculator.setAction("operationPlus")
+  console.log(calculator)
+})
+
+const minus = document.getElementById("minus")
+minus.addEventListener("click", () => {
+  calculator.setAction("operationMinus")
+  console.log(calculator)
+})
+
+const result = document.getElementById("result")
+result.addEventListener("click", () => {
+  console.log(calculator.result())
+  console.log(calculator)
+})
