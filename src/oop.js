@@ -12,9 +12,10 @@ class OperationNumbers {
 
   set numA(value) {
     if (!value) this._numA = ""
-    if (value.length > 4) throw new Error("invalid length number")
 
-    this._numA = value
+    if (this._checkValue(value)) {
+      this._numA = value
+    }
   }
 
   get numB() {
@@ -22,7 +23,16 @@ class OperationNumbers {
   }
 
   set numB(value) {
-    this._numB = value
+    if (!value) this._numB = ""
+
+    if (this._checkValue(value)) {
+      this._numB = value
+    }
+  }
+
+  _checkValue(value) {
+    if (value.length > 4) throw new Error("invalid length number")
+    return true
   }
 }
 
@@ -138,28 +148,55 @@ class Calculator {
   }
 }
 
-const calculator = new Calculator()
+class CalculatorUI {
+  constructor() {
+    this.calculator = new Calculator()
 
-const num1 = document.getElementById("num-1")
-num1.addEventListener("click", () => {
-  calculator.setNum(1)
-  console.log(calculator)
-})
+    this._initBtnNum()
+    this._initBtnOperation()
+    this._initBtnResult()
+  }
 
-const plus = document.getElementById("plus")
-plus.addEventListener("click", () => {
-  calculator.setAction("operationPlus")
-  console.log(calculator)
-})
+  _initBtnNum() {
+    for (let i = 0; i <= 9; i++) {
+      const id = `num-${i}`
+      const elem = document.getElementById(id)
+      elem.addEventListener("click", () => {
+        this.calculator.setNum(i)
+      })
+    }
+  }
 
-const minus = document.getElementById("minus")
-minus.addEventListener("click", () => {
-  calculator.setAction("operationMinus")
-  console.log(calculator)
-})
+  _initBtnOperation() {
+    const btnOperation = [
+      {
+        selector: "plus",
+        action: "operationPlus",
+      },
+      {
+        selector: "minus",
+        action: "operationMinus",
+      },
+    ]
 
-const result = document.getElementById("result")
-result.addEventListener("click", () => {
-  console.log(calculator.result())
-  console.log(calculator)
-})
+    btnOperation.forEach((elem) => {
+      const btn = document.getElementById(elem.selector)
+      btn.addEventListener("click", () => {
+        this.calculator.setAction(elem.action)
+      })
+    })
+  }
+
+  _initBtnResult() {
+    const btnResult = document.getElementById("result")
+
+    btnResult.addEventListener("click", () => {
+      console.log(this.calculator.result())
+      console.log(this.calculator)
+    })
+
+    return btnResult
+  }
+}
+
+new CalculatorUI()
