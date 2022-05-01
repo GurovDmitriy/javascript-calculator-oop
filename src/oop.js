@@ -1,6 +1,6 @@
 "use strict"
 
-class OperationNumbers {
+class CalculatorNumbers {
   constructor() {
     this.numA = ""
     this.numB = ""
@@ -30,13 +30,18 @@ class OperationNumbers {
     }
   }
 
+  reset() {
+    this.numA = ""
+    this.numB = ""
+  }
+
   _checkValue(value) {
     if (value.length > 4) throw new Error("invalid length number")
     return true
   }
 }
 
-class OperationCache {
+class CalculatorCache {
   constructor() {
     this.numA = null
     this.numB = null
@@ -57,7 +62,7 @@ class OperationCache {
   }
 
   set numB(value) {
-    if (!value && value !== 0) this._numB = null
+    if (this._checkValue(value)) this._numB = null
     else this._numB = value
   }
 
@@ -66,61 +71,85 @@ class OperationCache {
   }
 
   set result(value) {
-    if (!value && value !== 0) this._result = null
+    if (this._checkValue(value)) this._result = null
     else this._result = value
   }
 
-  checkCache(numA, numB) {
+  check(numA, numB) {
     return this.numA === numA && this.numB === numB
   }
 
-  updateCache(numA, numB, result) {
+  update(numA, numB, result) {
     this.numA = numA
     this.numB = numB
     this.result = result
   }
+
+  reset() {
+    this.numA = null
+    this.numB = null
+    this.result = null
+  }
+
+  _checkValue(value) {
+    return !value && value !== 0
+  }
 }
 
-class OperationPlus {
+class CalculatorPlus {
   constructor() {
-    this.operationCache = new OperationCache()
+    this.cache = new CalculatorCache()
   }
 
   result(numA, numB) {
-    if (this.operationCache.checkCache(numA, numB))
-      return this.operationCache.result
+    if (this.cache.check(numA, numB)) return this.cache.result
 
     const result = numA + numB
-    this.operationCache.updateCache(numA, numB, result)
 
-    return this.operationCache.result
+    if (this._checkResult(result)) {
+      this.cache.update(numA, numB, result)
+    }
+
+    return this.cache.result
+  }
+
+  _checkResult(value) {
+    if (String(value).length > 4) throw new Error("invalid length number")
+    return true
   }
 }
 
-class OperationMinus {
+class CalculatorMinus {
   constructor() {
-    this.operationCache = new OperationCache()
+    this.cache = new CalculatorCache()
   }
 
   result(numA, numB) {
-    if (this.operationCache.checkCache(numA, numB))
-      return this.operationCache.result
+    if (this.cache.check(numA, numB)) return this.cache.result
 
     const result = numA - numB
-    this.operationCache.updateCache(numA, numB, result)
 
-    return this.operationCache.result
+    if (this._checkResult(result)) {
+      this.cache.update(numA, numB, result)
+    }
+
+    return this.cache.result
+  }
+
+  _checkResult(value) {
+    if (String(value).length > 4) throw new Error("invalid length number")
+    return true
   }
 }
 
 class Calculator {
   constructor() {
     this.action = ""
+    this.isCalculateResult = false
 
-    this.operationNumbers = new OperationNumbers()
-
-    this.operationPlus = new OperationPlus()
-    this.operationMinus = new OperationMinus()
+    this.numbers = new CalculatorNumbers()
+    this.plus = new CalculatorPlus()
+    this.minus = new CalculatorMinus()
   }
 
   get action() {
@@ -132,17 +161,20 @@ class Calculator {
   }
 
   setNum(value) {
-    if (!this.action) this.operationNumbers.numA += value
-    else this.operationNumbers.numB += value
+    if (!this.action) this.numbers.numA += value
+    else this.numbers.numB += value
   }
 
-  setAction(value) {
-    this.action = value
+  reset() {
+    this.action = ""
+    this.numbers.numA = ""
+    this.numbers.numB = ""
+    this.isCalculateResult = false
   }
 
   result() {
-    const numA = Number(this.operationNumbers.numA)
-    const numB = Number(this.operationNumbers.numB)
+    const numA = Number(this.numbers.numA)
+    const numB = Number(this.numbers.numB)
 
     return this[this.action].result(numA, numB)
   }
@@ -155,6 +187,8 @@ class CalculatorUI {
     this._initBtnNum()
     this._initBtnOperation()
     this._initBtnResult()
+
+    this._initDisplay = this._initDisplay()
   }
 
   _initBtnNum() {
@@ -162,27 +196,18 @@ class CalculatorUI {
       const id = `num-${i}`
       const elem = document.getElementById(id)
       elem.addEventListener("click", () => {
-        this.calculator.setNum(i)
+        this._pushBtnNum(i)
       })
     }
   }
 
   _initBtnOperation() {
-    const btnOperation = [
-      {
-        selector: "plus",
-        action: "operationPlus",
-      },
-      {
-        selector: "minus",
-        action: "operationMinus",
-      },
-    ]
+    const btnOperation = ["plus", "minus"]
 
     btnOperation.forEach((elem) => {
-      const btn = document.getElementById(elem.selector)
+      const btn = document.getElementById(elem)
       btn.addEventListener("click", () => {
-        this.calculator.setAction(elem.action)
+        this._pushBtnOperation(elem)
       })
     })
   }
@@ -191,11 +216,32 @@ class CalculatorUI {
     const btnResult = document.getElementById("result")
 
     btnResult.addEventListener("click", () => {
-      console.log(this.calculator.result())
-      console.log(this.calculator)
+      this._pushBtnResult()
     })
+  }
 
-    return btnResult
+  _initDisplay() {
+    return {
+      numA: document.querySelector(".calculator__numA"),
+      numB: document.querySelector(".calculator__numB"),
+      result: document.querySelector(".calculator__result"),
+      error: document.querySelector(".calculator__error"),
+    }
+  }
+
+  _pushBtnNum(value) {
+    if (this.calculator.isCalculateResult) this.calculator.reset()
+    this.calculator.setNum(value)
+  }
+
+  _pushBtnOperation(value) {
+    this.calculator.action = value
+  }
+
+  _pushBtnResult() {
+    this.calculator.isCalculateResult = true
+    console.log(this.calculator.result())
+    console.log(this.calculator)
   }
 }
 
