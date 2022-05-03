@@ -1,1 +1,3 @@
-import "./oop.js"
+import CalculatorUI from "./calculatorUI"
+
+new CalculatorUI()
