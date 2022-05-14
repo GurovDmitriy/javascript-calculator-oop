@@ -8,6 +8,8 @@ export default class CalculatorUI {
 
     this._initBtnNum()
     this._initBtnOperation()
+    this._initBtnClear()
+    this._initBtnDot()
     this._initBtnResult()
 
     this._initDisplay = this._initDisplay()
@@ -17,6 +19,7 @@ export default class CalculatorUI {
     for (let i = 0; i <= 9; i++) {
       const id = `num-${i}`
       const elem = document.getElementById(id)
+
       elem.addEventListener("click", () => {
         this._pushBtnNum(i)
       })
@@ -39,6 +42,22 @@ export default class CalculatorUI {
 
     btnResult.addEventListener("click", () => {
       this._pushBtnResult()
+    })
+  }
+
+  _initBtnClear() {
+    const btnResult = document.getElementById("clear")
+
+    btnResult.addEventListener("click", () => {
+      this._pushBtnClear()
+    })
+  }
+
+  _initBtnDot() {
+    const btnResult = document.getElementById("dot")
+
+    btnResult.addEventListener("click", () => {
+      this._pushBtnDot()
     })
   }
 
@@ -71,8 +90,10 @@ export default class CalculatorUI {
     try {
       this._initDisplay.error.textContent = "no error"
 
-      this.calculator.action = value
-      this._initDisplay.result.textContent = this.calculator.action
+      if (this._checkBtnOperation()) {
+        this.calculator.action = value
+        this._initDisplay.result.textContent = this.calculator.action
+      }
     } catch (err) {
       this._initDisplay.error.textContent = err.message
     }
@@ -95,6 +116,32 @@ export default class CalculatorUI {
     }
   }
 
+  _pushBtnClear() {
+    try {
+      this._initDisplay.error.textContent = "no error"
+
+      this.calculator.numbers.reset()
+      this._initDisplay.result.textContent = 0
+    } catch (err) {
+      this._initDisplay.error.textContent = err.message
+    }
+  }
+
+  _pushBtnDot() {
+    try {
+      if (!this._checkBtnDot()) return false
+      this.calculator.setNum(".")
+
+      if (this.calculator.action) {
+        this._initDisplay.result.textContent = this.calculator.numbers.numB
+      } else {
+        this._initDisplay.result.textContent = this.calculator.numbers.numA
+      }
+    } catch (err) {
+      this._initDisplay.error.textContent = err.message
+    }
+  }
+
   _checkBtnResult() {
     if (!this.calculator.numbers.numA) throw new Error("numA is required")
     if (!this.calculator.numbers.numB) throw new Error("numB is required")
@@ -103,8 +150,25 @@ export default class CalculatorUI {
     return true
   }
 
+  _checkBtnOperation() {
+    if (!this.calculator.numbers.numA) throw new Error("numA is required")
+
+    return true
+  }
+
   _checkBtnNum() {
     if (!this.calculator.isCalculateResult) return false
+
+    return true
+  }
+
+  _checkBtnDot() {
+    const a = this.calculator.numbers.numA
+    const b = this.calculator.numbers.numB
+
+    if (!b && a.includes(".")) return false
+    if (b && b.includes(".")) return false
+    if (this.calculator._isCalculateResult) return false
 
     return true
   }

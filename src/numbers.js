@@ -36,7 +36,7 @@ export default class Numbers {
   }
 
   _checkValue(value) {
-    if (value.length > 4) throw new Error("invalid length number")
+    if (value.length > 9) throw new Error("invalid length number")
     return true
   }
 }

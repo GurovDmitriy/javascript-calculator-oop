@@ -10,7 +10,7 @@ export default class Minus {
   result(numA, numB) {
     if (this.cache.check(numA, numB)) return this.cache.result
 
-    const result = numA - numB
+    const result = (numA - numB).toFixed(4)
 
     if (this._checkResult(result)) {
       this.cache.update(numA, numB, result)
@@ -20,7 +20,7 @@ export default class Minus {
   }
 
   _checkResult(value) {
-    if (String(value).length > 4) throw new Error("invalid length number")
+    if (String(value).length > 9) throw new Error("invalid length number")
     return true
   }
 }
