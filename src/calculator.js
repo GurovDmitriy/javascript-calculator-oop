@@ -1,10 +1,7 @@
 "use strict"
 
 import Numbers from "./numbers"
-import Plus from "./plus"
-import Minus from "./minus"
-import Multiple from "./multiple"
-import Divide from "./divide"
+import Operation from "./operation"
 
 export default class Calculator {
   constructor() {
@@ -12,10 +9,7 @@ export default class Calculator {
     this.isCalculateResult = false
 
     this.numbers = new Numbers()
-    this.plus = new Plus()
-    this.minus = new Minus()
-    this.multiple = new Multiple()
-    this.divide = new Divide()
+    this.operation = new Operation()
   }
 
   get action() {
@@ -50,6 +44,6 @@ export default class Calculator {
     const numA = Number(this.numbers.numA)
     const numB = Number(this.numbers.numB)
 
-    return this[this.action].result(numA, numB)
+    return this.operation[this.action](numA, numB)
   }
 }
