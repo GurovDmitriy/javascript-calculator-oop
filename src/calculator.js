@@ -3,6 +3,8 @@
 import Numbers from "./numbers"
 import Plus from "./plus"
 import Minus from "./minus"
+import Multiple from "./multiple"
+import Divide from "./divide"
 
 export default class Calculator {
   constructor() {
@@ -12,6 +14,8 @@ export default class Calculator {
     this.numbers = new Numbers()
     this.plus = new Plus()
     this.minus = new Minus()
+    this.multiple = new Multiple()
+    this.divide = new Divide()
   }
 
   get action() {

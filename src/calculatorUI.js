@@ -27,7 +27,7 @@ export default class CalculatorUI {
   }
 
   _initBtnOperation() {
-    const btnOperation = ["plus", "minus"]
+    const btnOperation = ["plus", "minus", "multiple", "divide"]
 
     btnOperation.forEach((elem) => {
       const btn = document.getElementById(elem)
