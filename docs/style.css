@@ -69,7 +69,7 @@ p {
   max-width: 1000px;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 20px;
 
   background-color: var(--light-accent);
 }
@@ -85,6 +85,15 @@ p {
   background-color: var(--light-accent);
   border-radius: 20px;
   box-shadow: 20px 20px 60px #cab2b1, -20px -20px 60px #fff0ef;
+}
+
+.header__caption {
+  margin-bottom: 20px;
+
+  color: var(--color-info);
+
+  font-size: 1rem;
+  text-align: center;
 }
 
 .calculator__caption {
@@ -133,6 +142,15 @@ p {
 
 .calculator__btn:active {
   background-color: var(--dark-accent);
+}
+
+.footer__link {
+  display: block;
+  padding-top: 20px;
+
+  color: var(--color-info);
+  text-align: center;
+  text-decoration: none;
 }
 
 /* layout */

@@ -1,3 +1,3 @@
-# learn-js-calculator
+# template-js-calculator-oop
 
 ---
