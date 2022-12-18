@@ -1,3 +1,3 @@
-# template-js-calculator-oop
+# Learn JavaScript (OOP) - Calculator
 
 ---
