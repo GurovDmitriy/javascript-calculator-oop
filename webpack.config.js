@@ -5,7 +5,7 @@ module.exports = {
   mode: "development",
   entry: "./src/index.js",
   devServer: {
-    static: "./docs",
+    static: "./build",
   },
   output: {
     filename: "script.js",
